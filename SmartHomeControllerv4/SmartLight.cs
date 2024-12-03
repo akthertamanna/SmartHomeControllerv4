@@ -25,7 +25,8 @@ namespace SmartHomeController
         }
 
         // Constructor
-        public SmartLight(int deviceID, string deviceName, double brightness, string colour) : base(deviceID, deviceName)
+        public SmartLight(int deviceID, string deviceName, double brightness, string colour) 
+            : base(deviceID, deviceName)
         {
             this.Brightness = brightness;
             this.Colour = colour;

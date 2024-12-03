@@ -1,18 +1,21 @@
 ﻿using SmartHomeController;
+using System.Drawing;
 using System.Net.NetworkInformation;
 
 public class Program
 {
     // Globally available variables within the SmartHomeController file
     private static List<SmartDevice> devices = new List<SmartDevice>();
-    static string destinationFilePath;
+    static string destinationFilePath="";
+
+    
 
     // Starting point for the application
     public static void Main()
     {
+
         string folder = "Data";
         string filename = "smartdevices.csv";
-
         destinationFilePath = CopyDataToWorkingDir(folder, filename);
         LoadSmartDevices(destinationFilePath);
         MainMenu();
@@ -24,21 +27,21 @@ public class Program
     public static string CopyDataToWorkingDir(string folder, string filename)
     {
         // Define the source and destination paths
-        string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
-        string sourceFilePath = Path.Combine(projectDirectory, folder, filename);
+        //string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        //string sourceFilePath = Path.Combine(projectDirectory, folder, filename);
         string destinationFilePath = Path.Combine(Environment.CurrentDirectory, filename);
 
         // Copy the file to the working directory
-        if (File.Exists(sourceFilePath))
-        {
-            File.Copy(sourceFilePath, destinationFilePath, true);
-        }
-        else
-        {
-            Console.WriteLine("Source file not found: " + sourceFilePath);
+        //if (File.Exists(sourceFilePath))
+        //{
+        //    File.Copy(sourceFilePath, destinationFilePath, true);
+        //}
+        //else
+        //{
+        //    Console.WriteLine("Source file not found: " + sourceFilePath);
 
-        }
-        // Retrun the path to the copied file
+        //}
+        //// Retrun the path to the copied file
         return destinationFilePath;
     }
 
@@ -127,7 +130,7 @@ public class Program
             switch (choice)
             {
                 case "1":
-                    //InstallDeviceMenu();
+                    InstallDeviceMenu();
                     break;
                 case "2":
                     //ControlDevicesMenu();
@@ -145,5 +148,112 @@ public class Program
     }
 
 
+    public static void InstallDeviceMenu() 
+    {
+        while (true) 
+        {
+            Console.Clear();
+            Console.WriteLine("Install a device menu");
+            Console.WriteLine("1. Install new smart light");
+            Console.WriteLine("2. Install a new security camera");
+            Console.WriteLine("3. Return to main menu");
 
+            Console.Write("Please choose an option (1-3): ");
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    InstallSmartLightMenu();
+                    break;
+                case "2":
+                    InstallSecurityCameraMenu();
+                    break;
+                case "3":
+                    return;
+                default:
+                    Console.WriteLine("Invalid choice. Please try again.");
+                    break;
+            }
+
+
+        }
+        //Console.WriteLine("Device name");
+        //string deviceName = Console.ReadLine();
+        //Console.WriteLine("Device status");
+        //bool status = Convert.ToBoolean(Console.ReadLine());
+    }
+
+
+
+    public static void InstallSmartLightMenu()
+    {
+        // Collect infor for the smart light class
+        Console.WriteLine("\nInstall Smart Light");
+        Console.WriteLine("Enter Device ID");
+        int deviceID = Convert.ToInt32(Console.ReadLine());
+
+        Console.WriteLine("\nEnter Device name");
+        string deviceName = Console.ReadLine();
+
+        Console.WriteLine("\nEnter Brightness (1-100)");
+        double brightness = Convert.ToDouble(Console.ReadLine());
+
+        Console.WriteLine("\nEnter default Colour");
+        string colour = Console.ReadLine();
+
+
+        SmartLight smartLight = new SmartLight(deviceID, deviceName, brightness, colour);
+       
+        devices.Add(smartLight);
+
+        Console.WriteLine($"Smart Light installed");
+        Console.WriteLine($"Device name :{smartLight.DeviceName}");
+        Console.WriteLine(smartLight.DeviceID);
+
+
+
+        string folder = "Data";
+        string filename = "smartdevices.csv";
+        _ = CopyDataToWorkingDir(folder, filename);
+
+        string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        string sourceFilePath = Path.Combine(projectDirectory, folder, filename);
+        string destinationFilePath = Path.Combine(Environment.CurrentDirectory, filename);
+
+        SaveDevices(sourceFilePath, devices);
+         
+        Console.WriteLine("Press any key to continue");
+        Console.ReadKey();
+
+    }
+
+    public static void SaveDevices(string filePath, List<SmartDevice> devices) 
+    {
+        var lines = new List<string>
+        {
+            "DeviceId,DeviceType,DeviceName,Brightness,Colour,CameraResolution,CurrentTemperature,TargetTemperature,SpeakerVolume"
+        };
+
+        foreach (var device in devices) 
+        { 
+            string deviceLine = "";
+            if (device is SmartLight light) 
+            {
+                deviceLine = 
+                    $"{light.DeviceID}, SmartLight, {light.DeviceName}, {light.Brightness}, {light.Colour},,,,";
+            }
+
+            lines.Add(deviceLine);
+            File.WriteAllLines(filePath, lines);
+
+        }
+
+
+    }
+
+    public static void InstallSecurityCameraMenu()
+    {
+        Console.WriteLine("Wala");
+    }
 }
